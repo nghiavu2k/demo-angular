@@ -1,0 +1,4 @@
+* Có nhiều cách để chia sẻ dữ liệu, giao tiếp giữa các component trong ứng dụng, bài viết này mình sẽ tập trung vào 3 cách đơn giản sau:
+	- View child
+	- Event Emitter
+	- Data service BehaviourSubject

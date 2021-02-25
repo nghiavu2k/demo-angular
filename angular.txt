@@ -1,0 +1,37 @@
++ form:
+	- template-driven form (ngModel - 2 way binding)
+	- reactive form (formcontrol)
+	- custom validators
+ 
++ component relationship 
+	- child -> parent (Output)
+	- parent => child (Input)
+	- component => other component (shared service) 
++ Pipe : transform data to display in template
+	- Pipe default : lowercase , uppercase , ....
+	- Pipe custom 
++ Directive :
+	- component directive : dinh nghia selector cho 1 component
+	- strutural directive : kiem tra dieu kien o html  (ngswitch , ngif ,. ...)
+	- attribute directive (custom directive ) : can thiep vao html element 
++ Interceptor :
+	- what: Đây là service giúp ta có thể thao tác với backend và tạo ra các HTTP request
+	- why: 
+	- how:
+
++ Lazy-loading:
+	- what: là một design pattern thường được sử dụng trong lập trình máy tính để trì hoãn lại việc khởi tạo một đối tượng cho đến khi nào nó thực sự cần đến.
+	- why: Một ứng dụng Angular quy mô lớn sẽ chứa rất nhiều feature modules, nếu chúng được load cùng một lúc khi ứng dụng được khởi động thì sẽ phải mất rất nhiều thời gian. Vậy LL có tác dụng giảm thiểu tiêu tốn tài nguyên và cải thiện performace.
+	- where: routing.module.ts
+	- how: ng generate module <tên module> --route <tên route> --module <module ngoài>
+
++ Control value accessor:
+//là 1 interface là một interface đóng vai trò là cầu nối giữa Form API của angular với các native element trên DOM. Nó định nghĩa các phương thức để ghi giá trị và lắng nghe những thay đổi trên dữ liệu của các input element.
+	- interface ControlValueAccessor {
+  	   //có 4 func chính
+  	   writeValue(obj: any): void //để ghi giá trị cho element //Được gọi ngay sau khi sd form
+  	   registerOnChange(fn: any): void //để đăng ký hàm callback được gọi để thông báo cho angular khi có sự thay đổi của giá trị
+  	   registerOnTouched(fn: any): void //để đăng ký hàm callback được gọi để thông báo cho angular khi element có sự thao tác
+  	   setDisabledState(isDisabled: boolean)?: void //để gán giá trị cho thuộc tính [disabled]
+	}
+

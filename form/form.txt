@@ -1,0 +1,114 @@
+* Có 2 loại Form trong Angular là Template-driven form và Model Driven form
+	- Template-driven form là phương pháp mà chúng ta sẽ tạo forms dựa vào template. Chúng ta thực hiện việc thêm các directives và hành vi vào template, sau đó Angular sẽ tự động tạo forms để quản lý và sử dụng.
+	- Model Driven Form hay còn gọi là Reactive Form, phương pháp này tránh việc sử dụng các directive ví dụ như ngModel, required, etc, thay vào đó tạo các Object Model ở trong các Component, rồi tạo ra form từ chúng.
+
+* TDF:
+	- Luồng hoạt động: 
+		+ user thay đổi dữ liệu trong các ô input
+		+ input element sẽ gửi đi input event chứa value từ user nhập vào
+		+ Control_Value_Accessor sẽ trigger phương thức setValue( ) trên FormControl instance 
+		+ FormControl instance sẽ emit giá trị mới qua valueChanges observable
+		+ Bất cứ subcriber đến valueChanges observable đểu nhận được giá trị mới nhất của control đó
+		+ Control_Value_Accessor cũng gọi phương thức NgModel.viewToModelUpdate( ) để emit ngModelChange event
+		+ trong trường hợp chúng ta sử dụng cơ chế two-way binding thì lúc này property trong component sẽ được update value bởi ngModelChange event)
+		+ Khi property trong Component thay đôỉ thì cơ chế phát hiện thay đổi bắt đầu chạy và control_Value_Accessor sẽ update Input Element trong view với giá trị mới nhất của property trong component
+
+	- Ví dụ:
+		+ Để có thể sử dụng các APIs mà Angular cung cấp cho việc thao tác với Template-driven forms, chúng ta cần import NgModule là FormsModule từ package @angular/forms như sau:
+
+import { FormsModule } from '@angular/forms';
+
+@NgModule({
+  declarations: [...],
+  imports: [
+    ...,
+    FormsModule
+  ],
+  providers: [...],
+  bootstrap: [...]
+})
+export class AppModule { }
+
+		+ Đầu tiên chúng ta cần truy cập vào form instance bằng cách sử dụng ngForm
+
+		+ Tuy nhiên thì hiện tại form của chúng ta vẫn đang chỉ là 1 form rỗng, công việc tiếp theo là chúng ta phải nói cho Angular biết các form control nào cần phải quản lý. Đây chính là lúc chúng ta dùng đến ngModel directive.
+
+Chúng ta sẽ thêm ngModel vào các control như sau:
+
+chú ý là phải có attribute name cho các form control
+vì form sẽ quản lý các form control dựa trên attr name
+
+
+		+ Đến đây ta vẫn chưa thể bind được data cho các control với book, vậy ta cần dùng đến binding property cho ngModel(cho biến hero), VD: [ngModel]="hero.name"
+
+		+ Chú ý rằng, khi update form control, bản thân control được form quản lý sẽ thay đổi – heroForm.value, nhưng object hero ở trong component sẽ không có thay đổi gì cả, vì chúng ta không hề đụng chạm gì tới nó, chúng ta chỉ binding một chiều, để có thể thay đổi book trong component chúng ta buộc phải binding ngược trở lại. Cách binding trên còn được biết đến với tên gọi two-way binding [(ngModel)]
+
+
+
+* MDF-Reactive Forms
+	- Luồng hoạt động : Như mọi người có thể thấy trong sơ đồ trên, ban đầu chúng ta tạo toàn bộ form control tree ở trong code bằng cách tạo mới các instance như là FormGroup, FormControl..., sau đó để liên kết các instance này với các element ở bên template thì chúng ta tiếp tục sử dụng các directive formGroup, formControlName...
+	
+	- Về control tree hay còn gọi là AbstractControl, nó cung cấp các hành vi, thuộc tính chung cho các lớp con, trong Reactive form có 3 lớp con là: FormControl, FormGroup, và FormArray:
+		+ FormControl là lớp thấp nhất, nó tương ứng với một HTML form control như input, select, text area...
+		+ FormGroup là nơi lưu giữ giá trị và trạng thái hợp lệ của một nhóm các đối tượng thuộc AbstractControl – có thể là FormControl, FormGroup, hay FormArray – đây là một dạng composite. Ở level cao nhất của một form trong component của bạn là một FormGroup.
+		+ FormArray là nơi lưu giữ giá trị và trạng thái hợp lệ của một mảng các đối tượng thuộc AbstractControl giống như FormGroup. Nó cũng là một dạng composite. Nhưng nó không phải là thành phần ở level cao nhất.
+
+	- Ví dụ: 
+		+ Để có thể sử dụng các APIs mà Angular cung cấp cho việc thao tác với Reactive forms, chúng ta cần import ReactiveFormsModule từ package @angular/forms như sau:
+
+import { ReactiveFormsModule } from '@angular/forms';
+
+@NgModule({
+  declarations: [...],
+  imports: [
+    ...,
+    ReactiveFormsModule,
+  ],
+  providers: [...],
+  bootstrap: [...]
+})
+export class AppModule { }
+
+	- FormGroup
+		+ Đầu tiên chúng ta cần khởi tạo form trong ngOnInit
+			. Tạo ra 1 instance formGroup
+			. Trong formGroup sẽ có các formControl or formGroup or formArray...Xong.
+
+		+ Dùng directive formGroup để liên kết form bên template, vd... Các formControl là lớp nhỏ nhất nên ta sẽ dùng directive là formControlName để liên kết, vd...
+
+		+ Để update value cho formControl thì có ta 2 cách đó là sử dụng patchValue hoặc setValue. Về bản chất patchValue chính là gọi lại setValue. Trong khi setValue chỉ update lại những object value được chỉ định thì patchValue sẽ set lại tất cả object value trong form, nếu như thiếu hoặc thừa 1 control nào đó thì hàm patchValue sẽ bị báo lỗi.
+
+	- Validators
+		+ Sync Validator: Giống như tên gọi của nó thì đây là loại validator đồng bộ, bao gồm các validator trực tiếp với form như là: required, minLength, maxLength...
+
+		+ Async Validator: Validator bất đồng bộ tức là nó sẽ phải chờ 1 tác vụ bất đồng bộ nào đó xử lý xong thì mới tiến hành validate được. Ví dụ như để kiểm tra email trong form đăng ký xem đã tồn tại trong database hay chưa thì chúng ta bắt buộc phải gọi 1 API lên server để kiểm tra, sau khi có kết quả trả về thì lúc này ta mới validate được cho form đăng ký đó.
+
+	- Custom validator
+		+ vd : 
+	export const yearValidation = (control: FormGroup): { [key: string]: boolean } | null => {
+    		const year = control.get('year');
+    		return year.match(/\D.*/) ? { isError: true } : null;
+	}
+
+	// mang biến yearValidation đi sử dụng bình thường
+
+
+Trong bài viết ngày hôm nay thì mình đã giới thiệu với mọi người về Model-Driven Form hay còn gọi là Reactive Form. Có thể thấy thằng Reactive Form khá là linh hoạt trong cách sử dụng, do form được tạo trong component cho nên các thao tác với form đều sử dụng js và điều này làm mình cảm thấy thoải mái hơn nhiều so với việc phải thao tác trong template html. Và điểm mạnh có Reactive form đó là bên cạnh các Validators có sẵn thì chúng ta có thể tạo ra các Validators vô cùng mạnh mẽ và hiệu quả, đây có lẽ cũng chính là đặc điểm mà nhiều người ưa sử dụng Reactive form hơn là Template-driven form.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
